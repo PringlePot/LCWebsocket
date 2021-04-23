@@ -12,7 +12,9 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,8 +61,7 @@ public class Websocket extends WebSocketClient {
             System.out.println("Got packet: " + packet.getClass().getSimpleName());
             packet.read(buf);
             packet.handle(this);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             System.out.println("Error from: " + packetClass);
             exception.printStackTrace();
         }
@@ -72,7 +73,7 @@ public class Websocket extends WebSocketClient {
         this.status = ServerStatus.DISCONNECTED;
     }
 
-    public void handleAuthentication(SPacketAuthentication packetAuthentication){
+    public void handleAuthentication(SPacketAuthentication packetAuthentication) {
         this.status = ServerStatus.AUTHENTICATING;
     }
 
@@ -93,28 +94,29 @@ public class Websocket extends WebSocketClient {
             buf.buf().readBytes(bytes);
             buf.buf().release();
             this.send(bytes);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void setServer(String server){
-        final Matcher ipRegex = Pattern.compile("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)").matcher(server);;
+    private void setServer(String server) {
+        final Matcher ipRegex = Pattern.compile("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)").matcher(server);
+        ;
         this.server = server;
-        if(!ipRegex.find()){
+        if (!ipRegex.find()) {
             //Ip not numeric.. Sending it.
             this.sendPacket(new ShPacketStatusUpdate("", server));
-        }
-        else{
+        } else {
             this.sendPacket(new ShPacketStatusUpdate("", "_numeric_"));
         }
     }
-    public void handleConnection(SPacketConnection packetConnection){
+
+    public void handleConnection(SPacketConnection packetConnection) {
         this.status = ServerStatus.READY;
         sendPacket(new ShPacketFriendUpdate("", "", Status.AWAY.ordinal(), false));
         sendPacket(new ShPacketFriendRequest("2ab2e9c5-37ee-452e-8801-8696b3a1f76c", "Marcel"));
         new Thread(() -> {
-            while (true){
+            while (true) {
                 sendPacket(new CPacketMods());
                 try {
                     Thread.sleep(60);
@@ -124,24 +126,40 @@ public class Websocket extends WebSocketClient {
             }
         }).start();
     }
-    public void handleServerChange(ShPacketStatusUpdate packetServerUpdate){
+
+    public void handleServerChange(ShPacketStatusUpdate packetServerUpdate) {
         System.out.println("Server changed for user: " + packetServerUpdate.getPlayerId() + " to: " + packetServerUpdate.getServer());
     }
 
-    public void handleFriendRequest(ShPacketFriendRequest packetFriendRequest){
+    public void handleFriendRequest(ShPacketFriendRequest packetFriendRequest) {
         System.out.println("Got friend request from: " + packetFriendRequest.getName() + ", accepting it.");
         this.sendPacket(new ShPacketFriendRequestUpdate(true, packetFriendRequest.getPlayerId()));
     }
 
-    public void handleMessage(ShPacketMessage packetMessage){
+    public void handleMessage(ShPacketMessage packetMessage) {
         System.out.println("Got message: " + packetMessage.getMessage() + " From: " + packetMessage.getPlayerId() + " Setting user as console target.");
         lastMessage = packetMessage.getPlayerId();
     }
 
-    public void handleConsole(SPacketFormattedConsoleOutput packetFormattedConsoleOutput){
-        System.out.println("[" + packetFormattedConsoleOutput.getPrefix()  + "] "+ packetFormattedConsoleOutput.getContent());
+    public void handleConsole(SPacketFormattedConsoleOutput packetFormattedConsoleOutput) {
+        System.out.println("[" + packetFormattedConsoleOutput.getPrefix() + "] " + packetFormattedConsoleOutput.getContent());
     }
-    public void handleRawConsole(ShPacketConsole packetConsole){
+
+    public void handleRawConsole(ShPacketConsole packetConsole) {
         System.out.println(packetConsole.getOutput());
+    }
+
+    public void handleFriendUpdate(ShPacketFriendUpdate packetFriendUpdate) {
+        if(packetFriendUpdate.getStatus() < 10L){
+            Status status = Status.ONLINE;
+            for(Status status1 : Status.values()){
+                if(status1.ordinal() == packetFriendUpdate.getStatus()){
+                    status = status1;
+                }
+            }
+            System.out.println(packetFriendUpdate.getName() + " went on status " + status.getName());
+            return;
+        }
+        System.out.println(packetFriendUpdate.getName() + " went offline! they were last seen at: " + new Date(packetFriendUpdate.getStatus()));
     }
 }

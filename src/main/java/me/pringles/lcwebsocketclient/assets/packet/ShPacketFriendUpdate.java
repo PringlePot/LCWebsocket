@@ -1,6 +1,7 @@
 package me.pringles.lcwebsocketclient.assets.packet;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.pringles.lcwebsocketclient.assets.AssetsPacket;
 import me.pringles.lcwebsocketclient.assets.Websocket;
@@ -10,6 +11,7 @@ import java.io.IOException;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class ShPacketFriendUpdate extends AssetsPacket {
     private String playerId;
     private String name;
@@ -34,6 +36,6 @@ public class ShPacketFriendUpdate extends AssetsPacket {
 
     @Override
     public void handle(Websocket var1) {
-
+        var1.handleFriendUpdate(this);
     }
 }
