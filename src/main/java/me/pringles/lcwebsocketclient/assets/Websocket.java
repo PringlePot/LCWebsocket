@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,8 +112,9 @@ public class Websocket extends WebSocketClient {
 
     public void handleConnection(SPacketConnection packetConnection) {
         this.status = ServerStatus.READY;
-        sendPacket(new ShPacketFriendUpdate("", "", Status.AWAY.ordinal(), false));
-        sendPacket(new ShPacketFriendRequest("2ab2e9c5-37ee-452e-8801-8696b3a1f76c", "Marcel"));
+        setServer("hypixel.net");
+        this.sendPacket(new ShPacketFriendRequest("7471b8e8-27c2-4354-a7d2-bd6a82dc00a0", "macguy"));
+
         new Thread(() -> {
             while (true) {
                 sendPacket(new CPacketMods());
@@ -161,5 +161,10 @@ public class Websocket extends WebSocketClient {
             return;
         }
         System.out.println(packetFriendUpdate.getName() + " went offline! they were last seen at: " + new Date(packetFriendUpdate.getStatus()));
+    }
+
+    public void handleFriendRemove(ShPacketClientFriendRemove packetClientFriendRemove){
+        System.out.println(packetClientFriendRemove.getPlayerId() + " Removed us as friend! Sending new friend request.");
+        this.sendPacket(new ShPacketFriendRequest(packetClientFriendRemove.getPlayerId(), ""));
     }
 }
