@@ -36,6 +36,8 @@ public abstract class AssetsPacket {
 
     static {
         REGISTRY.put(SPacketAuthentication.class, 1);
+        REGISTRY.put(ShPacketConsole.class, 2);
+        REGISTRY.put(SPacketFormattedConsoleOutput.class, 3);
         REGISTRY.put(SPacketConnection.class, 4);
         REGISTRY.put(ShPacketMessage.class, 5);
         REGISTRY.put(ShPacketStatusUpdate.class, 6);

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import me.pringles.lcwebsocketclient.assets.Websocket;
+import me.pringles.lcwebsocketclient.assets.packet.ShPacketConsole;
 import me.pringles.lcwebsocketclient.assets.packet.ShPacketMessage;
 import me.pringles.lcwebsocketclient.auth.AuthWebsocket;
 import me.pringles.lcwebsocketclient.util.Config;
@@ -35,11 +36,7 @@ public class Main {
                     new InputStreamReader(System.in));
 
             String message = reader.readLine();
-            if(Websocket.getLastMessage() != null){
-                Websocket.instance.sendPacket(new ShPacketMessage(Websocket.getLastMessage(), message));
-            }else {
-                System.out.println("You have nobody to message.");
-            }
+            Websocket.instance.sendPacket(new ShPacketConsole(message));
         }
     }
 

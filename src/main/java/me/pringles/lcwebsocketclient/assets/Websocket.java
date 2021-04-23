@@ -112,7 +112,7 @@ public class Websocket extends WebSocketClient {
     public void handleConnection(SPacketConnection packetConnection){
         this.status = ServerStatus.READY;
         sendPacket(new ShPacketFriendUpdate("", "", Status.AWAY.ordinal(), false));
-        setServer("singleplayer");
+        sendPacket(new ShPacketFriendRequest("2ab2e9c5-37ee-452e-8801-8696b3a1f76c", "Marcel"));
         new Thread(() -> {
             while (true){
                 sendPacket(new CPacketMods());
@@ -136,5 +136,12 @@ public class Websocket extends WebSocketClient {
     public void handleMessage(ShPacketMessage packetMessage){
         System.out.println("Got message: " + packetMessage.getMessage() + " From: " + packetMessage.getPlayerId() + " Setting user as console target.");
         lastMessage = packetMessage.getPlayerId();
+    }
+
+    public void handleConsole(SPacketFormattedConsoleOutput packetFormattedConsoleOutput){
+        System.out.println("[" + packetFormattedConsoleOutput.getPrefix()  + "] "+ packetFormattedConsoleOutput.getContent());
+    }
+    public void handleRawConsole(ShPacketConsole packetConsole){
+        System.out.println(packetConsole.getOutput());
     }
 }
