@@ -44,7 +44,8 @@ public abstract class AssetsPacket {
         REGISTRY.put(SPacketBulkFriends.class, 7);
         REGISTRY.put(SPacketCosmetics.class, 8);
         REGISTRY.put(ShPacketFriendRequest.class, 9);
-        REGISTRY.put(ShPacketClientFriendRemove.class, 17);
+        REGISTRY.put(SPacketFriendUpdate.class, 16);
+        REGISTRY.put(ShPacketFriendRemove.class, 17);
         REGISTRY.put(ShPacketFriendUpdate.class, 18);
         REGISTRY.put(ShPacketFriendRequestUpdate.class, 21);
         REGISTRY.put(SPacketEmotes.class, 57);

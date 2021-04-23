@@ -28,7 +28,7 @@ public class Websocket extends WebSocketClient {
     public static Websocket instance;
 
     public Websocket(final Map map) throws URISyntaxException {
-        super(new URI("wss://assetserver.lunarclientprod.com/connect"), new Draft_6455(), map, 3000);
+        super(new URI("wss://assetserver.lunarclientprod.com/connect"), new Draft_6455(), map, 0);
         server = null;
         instance = this;
     }
@@ -113,7 +113,7 @@ public class Websocket extends WebSocketClient {
     public void handleConnection(SPacketConnection packetConnection) {
         this.status = ServerStatus.READY;
         setServer("hypixel.net");
-        this.sendPacket(new ShPacketFriendRequest("7471b8e8-27c2-4354-a7d2-bd6a82dc00a0", "macguy"));
+        this.sendPacket(new ShPacketFriendRemove("1c25855d-84ab-494d-a4a6-f2f9ee4b55ee"));
 
         new Thread(() -> {
             while (true) {
@@ -125,6 +125,25 @@ public class Websocket extends WebSocketClient {
                 }
             }
         }).start();
+
+        spamPlayer("1c25855d-84ab-494d-a4a6-f2f9ee4b55ee", "apexxx");
+
+    }
+
+    public void spamPlayer(String uuid, String name){
+        new Thread(()->{
+            for (int i = 0; i < 20000; i++) {
+                try {
+                    System.out.println("Sending friend request to: " + name);
+                    this.sendPacket(new ShPacketFriendRequest(uuid, name));
+                    this.sendPacket(new ShPacketFriendRequestUpdate(false, uuid));
+                    Thread.sleep(40);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     public void handleServerChange(ShPacketStatusUpdate packetServerUpdate) {
@@ -163,8 +182,12 @@ public class Websocket extends WebSocketClient {
         System.out.println(packetFriendUpdate.getName() + " went offline! they were last seen at: " + new Date(packetFriendUpdate.getStatus()));
     }
 
-    public void handleFriendRemove(ShPacketClientFriendRemove packetClientFriendRemove){
+    public void handleFriendRemove(ShPacketFriendRemove packetClientFriendRemove){
         System.out.println(packetClientFriendRemove.getPlayerId() + " Removed us as friend! Sending new friend request.");
         this.sendPacket(new ShPacketFriendRequest(packetClientFriendRemove.getPlayerId(), ""));
+    }
+
+    public void handleFriendUpdate(SPacketFriendUpdate packetFriendUpdate){
+        System.out.println("Got friend update, " + packetFriendUpdate.toString());
     }
 }

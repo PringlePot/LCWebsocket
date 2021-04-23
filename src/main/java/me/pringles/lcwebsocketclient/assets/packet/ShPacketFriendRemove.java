@@ -13,7 +13,7 @@ import java.io.IOException;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShPacketClientFriendRemove extends AssetsPacket {
+public class ShPacketFriendRemove extends AssetsPacket {
     private String playerId;
 
     @Override
