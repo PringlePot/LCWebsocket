@@ -57,7 +57,7 @@ public class Websocket extends WebSocketClient {
                 System.out.println("Got unknown packet: " + n);
                 return;
             }
-            System.out.println("Got packet: " + packet.getClass().getSimpleName());
+            System.out.println("Got packet: " + packet);
             packet.read(buf);
             packet.handle(this);
         } catch (Exception exception) {
@@ -74,6 +74,11 @@ public class Websocket extends WebSocketClient {
 
     public void handleAuthentication(SPacketAuthentication packetAuthentication) {
         this.status = ServerStatus.AUTHENTICATING;
+    }
+
+    public void sendConsoleMessage(String command){
+        sendPacket(new ShPacketConsole(command));
+        System.out.println("Sending " + command + " to lunar console");
     }
 
     @Override
@@ -113,31 +118,12 @@ public class Websocket extends WebSocketClient {
     public void handleConnection(SPacketConnection packetConnection) {
         this.status = ServerStatus.READY;
         setServer("hypixel.net");
-        this.sendPacket(new ShPacketFriendRemove("1c25855d-84ab-494d-a4a6-f2f9ee4b55ee"));
 
         new Thread(() -> {
             while (true) {
                 sendPacket(new CPacketMods());
                 try {
                     Thread.sleep(60);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-        spamPlayer("1c25855d-84ab-494d-a4a6-f2f9ee4b55ee", "apexxx");
-
-    }
-
-    public void spamPlayer(String uuid, String name){
-        new Thread(()->{
-            for (int i = 0; i < 20000; i++) {
-                try {
-                    System.out.println("Sending friend request to: " + name);
-                    this.sendPacket(new ShPacketFriendRequest(uuid, name));
-                    this.sendPacket(new ShPacketFriendRequestUpdate(false, uuid));
-                    Thread.sleep(40);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -158,6 +144,15 @@ public class Websocket extends WebSocketClient {
     public void handleMessage(ShPacketMessage packetMessage) {
         System.out.println("Got message: " + packetMessage.getMessage() + " From: " + packetMessage.getPlayerId() + " Setting user as console target.");
         lastMessage = packetMessage.getPlayerId();
+
+        if(packetMessage.getMessage().startsWith("!")){
+            String[] args = packetMessage.getMessage().substring("!".length()).split(" ");
+            if(args[0].equals("setserver")){
+                setServer(args[1]);
+                sendPacket(new ShPacketMessage(packetMessage.getPlayerId(), "Set server to " + args[1]));
+            }
+
+        }
     }
 
     public void handleConsole(SPacketFormattedConsoleOutput packetFormattedConsoleOutput) {

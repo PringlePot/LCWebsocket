@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import me.pringles.lcwebsocketclient.assets.Websocket;
 import me.pringles.lcwebsocketclient.assets.packet.ShPacketConsole;
+import me.pringles.lcwebsocketclient.assets.packet.ShPacketFriendRequest;
 import me.pringles.lcwebsocketclient.assets.packet.ShPacketMessage;
 import me.pringles.lcwebsocketclient.auth.AuthWebsocket;
 import me.pringles.lcwebsocketclient.util.Config;
@@ -25,7 +26,7 @@ public class Main {
         new Thread(() -> connectToAuth(s -> {
             try {
                 System.out.println("Got auth key, connecting to assets websocket");
-                Websocket websocket = new Websocket(ImmutableMap.builder().put("accountType", "MOJANG").put("version", "pringles is pog").put("gitCommit", "who cares").put("branch", "master").put("os", System.getProperty("os.name")).put("arch", "").put("server", "pornhub.com").put("launcherVersion", "2.4.1").put("username", config.getUsername()).put("playerId", config.getUuid()).put("Authorization", s).build());
+                Websocket websocket = new Websocket(ImmutableMap.builder().put("accountType", "MOJANG").put("version", "v1_8").put("gitCommit", "2ef0680874b1d11cea10a4b969c6f5ec1f804d70").put("branch", "master").put("os", System.getProperty("os.name")).put("arch", "").put("server", "pornhub.com").put("launcherVersion", "2.4.1").put("username", config.getUsername()).put("playerId", config.getUuid()).put("Authorization", s).put("clothCloak", "false").put("hwid", "myHWID").build());
                 websocket.connect();
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -36,7 +37,7 @@ public class Main {
                     new InputStreamReader(System.in));
 
             String message = reader.readLine();
-            Websocket.instance.sendPacket(new ShPacketConsole(message));
+            Websocket.getInstance().sendPacket(new ShPacketMessage(Websocket.getLastMessage(), message));
         }
     }
 

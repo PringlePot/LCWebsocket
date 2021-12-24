@@ -52,4 +52,8 @@ public abstract class AssetsPacket {
         REGISTRY.put(CPacketMods.class, 64);
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

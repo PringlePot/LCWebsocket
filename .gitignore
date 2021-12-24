@@ -45,3 +45,4 @@ manifest.mf
 .idea/
 
 working-dir/
+config.properties

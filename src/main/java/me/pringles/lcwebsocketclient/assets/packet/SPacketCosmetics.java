@@ -14,6 +14,8 @@ public class SPacketCosmetics extends AssetsPacket {
     private List<Integer> cosmetics;
     private int color = -1;
     private boolean thing;
+    private boolean thing2;
+    private boolean thing3;
 
     @Override
     public void write(ByteBufWrapper var1) {
@@ -39,11 +41,25 @@ public class SPacketCosmetics extends AssetsPacket {
         }
         this.color = var1.buf().readInt();
         this.thing = var1.buf().readBoolean();
-
+        this.thing2 = var1.buf().readBoolean();
+        //this.thing3 = var1.buf().readBoolean();
     }
 
     @Override
     public void handle(Websocket var1) {
 
+    }
+
+
+    @Override
+    public String toString() {
+        return "SPacketCosmetics{" +
+                "target=" + target +
+                ", cosmetics=" + cosmetics +
+                ", color=" + color +
+                ", thing=" + thing +
+                ", thing2=" + thing2 +
+                ", thing3=" + thing3 +
+                '}';
     }
 }
