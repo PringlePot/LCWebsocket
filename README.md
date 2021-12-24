@@ -1,13 +1,13 @@
 # LCWebsocket
 
 ### What dis?
-This is a console version of the lunar client. It worked 6 months ago so idk if it still works.
+This is a console version of Lunar Client. It connects to their assets websocket, you can do basically everything with this.
 
 ### How to use?
-Fill in properties for it to work. Get uuid from namemc, u need the one with dashes. Then compile it with maven and just run it.
+Rename the `config.properties.example` to `config.properties` then fill it in. Run it using IntellIJ.
 
 ### Update???
-Nah maybe if i wanna
+It works again!!!
 
 ### Credits
 [Decencies](https://github.com/Decencies) for helping with with some of the packet names
